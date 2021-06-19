@@ -60,8 +60,11 @@ export default function Home({ data, embeds }) {
 export async function getServerSideProps(context) {
   
   const { slug } = context.query
+  const apiBase = process.env.API_BASE
 
-  const res = await fetch(`http://app.plctrmm.test/page/${slug}`);
+  console.log(apiBase)
+
+  const res = await fetch(`${apiBase}/page/${slug}`);
   const data = await res.json()
 
   if (!data) {
