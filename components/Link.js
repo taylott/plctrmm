@@ -15,7 +15,7 @@ const Link = ( { attr } ) => {
     <a target="_blank" rel="noopener" id={ linkId } className={ linkCls } href={ attr.link }>
       { linkIcon }
       <span>{ linkTxt }</span>
-      { linkCls !== 'button' ? 
+     
       <style jsx>{`
         a {
           background:${linkBg};
@@ -27,7 +27,8 @@ const Link = ( { attr } ) => {
           color:${linkHovCol};
           fill:${linkHovCol};
         }
-      `}</style> : ''}
+      `}
+      </style>
     </a>
   )
 }

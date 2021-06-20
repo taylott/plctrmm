@@ -58,18 +58,20 @@ export default function Home({ data, embeds }) {
 }
 
 export async function getServerSideProps(context) {
-  
+
+  //hardcode the host for now because we're not ready for dynamic subdomains yet
+  //const { host } = context.req.headers 
+  const host = 'plctrmm'
   const { slug } = context.query
   const apiBase = process.env.API_BASE
 
-  console.log(apiBase)
-
-  const res = await fetch(`${apiBase}/page/${slug}`);
+  //do some request magic
+  const res = await fetch(`${apiBase}/${host}/${slug}`)
   const data = await res.json()
 
   if (!data) {
     return {
-      notFound: true,
+      //notFound: true,
     }
   }
   let embeds = {};
