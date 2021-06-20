@@ -58,9 +58,6 @@ export async function getServerSideProps(context) {
   //do some request magic
   const res = await fetch(`${apiBase}/${site}/${slug}`)
   const data = await res.json()
-
-  console.log(data)
-
   if (!data) {
     return {
       notFound: true,
