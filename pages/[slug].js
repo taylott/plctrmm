@@ -3,8 +3,7 @@ import Header from "../components/Header"
 import Footer from "../components/Footer"
 import ComponentLoader from '../components/ComponentLoader'
 import Theme from './Theme.js'
-import useSWR from 'swr';
-import { extract } from 'oembed-parser'
+import useSWR from 'swr'
 
 const fetcher = async ( url ) => {
   const res = await fetch(url)
@@ -16,21 +15,7 @@ const fetcher = async ( url ) => {
     }
   }
 
-  let embeds = {};
-
-  if (obj.oembeds) {
-    for (let i = 0; i < obj.oembeds.length; i++) {
-      let o = await extract(obj.oembeds[i].source).then((oembed) => {
-        return oembed
-      }).catch((err) => {
-        console.trace(err)
-      });
-      let assoc = obj.oembeds[i].assoc;
-      embeds[assoc] = o
-    }
-  }
-
-  return  {obj, embeds}
+  return  {obj}
 }
 
 
@@ -54,10 +39,9 @@ export default function Home({ apiBase, site, slug }) {
         <div>
           {
             data.obj.content.map((block, index) => {
-              if (block.blockType == 'mediaPlayer') {
-                block.blockEmbed = embeds[block.blockID]
-              }
+
               return <ComponentLoader key={'block_' + index} block={block} />
+              
             }
             )}
         </div>
