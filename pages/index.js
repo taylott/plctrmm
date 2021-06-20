@@ -33,34 +33,53 @@ export default function Home({ data, embeds }) {
   )
 }
 
+
 export async function getServerSideProps(context) {
 
-  //hardcode the host for now because we're not ready for dynamic subdomains yet
-  //const { host } = context.req.headers 
+  //Get our localdev environment default site if we're running locally or grab the actual host
+  const host = (context.req.headers.host == 'localhost:3000') ? process.env.DEFAULT_SITE : context.req.headers.host
 
-  const host = 'plctrmm'
-  const slug = '__home__'
+  //a fallback to use
+  const defaultSite = 'plctrmm'
+
+  //generate an object with all parts of the domain
+  const split = host.split(".");
+
+  //eventual we should check that we are on plctrmm.to / drft.dev
+  //this will always be true for now as it's a mirror
+
+  //if we have a three part url (something.something.com) get the subdomain, otherwise just use default
+  const site = (split.length == 3) ? split[0] : defaultSite
+
+  const slug = context.query.slug ?? '__home__'
   const apiBase = process.env.API_BASE
 
+
   //do some request magic
-  const res = await fetch(`${apiBase}/${host}/${slug}`)
+  const res = await fetch(`${apiBase}/${site}/${slug}`)
   const data = await res.json()
+
+  console.log(data)
 
   if (!data) {
     return {
-      //notFound: true,
+      notFound: true,
     }
   }
+  
+
   let embeds = {};
 
-  for (let i = 0; i < data.oembeds.length; i++) { 
-    let o = await extract(data.oembeds[i].source).then((oembed) => {
-      return oembed
-    }).catch((err) => {
-      console.trace(err)
-    });
-    let assoc = data.oembeds[i].assoc;
-    embeds[assoc] = o
+  if (data.oembeds) {
+    for (let i = 0; i < data.oembeds.length; i++) { 
+      let o = await extract(data.oembeds[i].source).then((oembed) => {
+        return oembed
+      }).catch((err) => {
+        console.trace(err)
+      });
+      let assoc = data.oembeds[i].assoc;
+      embeds[assoc] = o
+    }
   }
 
   return {

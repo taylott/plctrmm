@@ -50,28 +50,34 @@ export async function getServerSideProps(context) {
   //if we have a three part url (something.something.com) get the subdomain, otherwise just use default
   const site = (split.length == 3) ? split[0] : defaultSite
 
-  const { slug } = context.query
+  const slug = context.query.slug ?? '__home__'
   const apiBase = process.env.API_BASE
 
   //do some request magic
   const res = await fetch(`${apiBase}/${site}/${slug}`)
   const data = await res.json()
 
+  console.log(data)
+
   if (!data) {
     return {
-      //notFound: true,
+      notFound: true,
     }
   }
+  
+
   let embeds = {};
 
-  for (let i = 0; i < data.oembeds.length; i++) { 
-    let o = await extract(data.oembeds[i].source).then((oembed) => {
-      return oembed
-    }).catch((err) => {
-      console.trace(err)
-    });
-    let assoc = data.oembeds[i].assoc;
-    embeds[assoc] = o
+  if (data.oembeds) {
+    for (let i = 0; i < data.oembeds.length; i++) { 
+      let o = await extract(data.oembeds[i].source).then((oembed) => {
+        return oembed
+      }).catch((err) => {
+        console.trace(err)
+      });
+      let assoc = data.oembeds[i].assoc;
+      embeds[assoc] = o
+    }
   }
 
   return {
